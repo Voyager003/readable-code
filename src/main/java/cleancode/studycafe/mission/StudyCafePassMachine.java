@@ -7,6 +7,7 @@ import cleancode.studycafe.mission.io.StudyCafeFileHandler;
 import cleancode.studycafe.mission.model.StudyCafeLockerPass;
 import cleancode.studycafe.mission.model.StudyCafePass;
 import cleancode.studycafe.mission.model.StudyCafePassType;
+import cleancode.studycafe.mission.model.StudyCafePasses;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,12 +46,12 @@ public class StudyCafePassMachine {
         outputHandler.showPassListForSelection(passCandidates);
         return inputHandler.getSelectPass(passCandidates);
     }
+
     private List<StudyCafePass> findPassCandidatesBy(StudyCafePassType studyCafePassType) {
-        List<StudyCafePass> allPasses = cafeFileHandler.readStudyCafePasses();
-        return allPasses.stream()
-                .filter(studyCafePass -> studyCafePass.getPassType() == studyCafePassType)
-                .toList();
+        StudyCafePasses allPasses = cafeFileHandler.readStudyCafePasses();
+        return allPasses.findPassBy(studyCafePassType);
     }
+
     private Optional<StudyCafeLockerPass> selectLockerPass(StudyCafePass selectedPass) {
         if (selectedPass.getPassType() != StudyCafePassType.FIXED) {
             return Optional.empty();
@@ -65,6 +66,7 @@ public class StudyCafePassMachine {
         }
         return Optional.empty();
     }
+
     private StudyCafeLockerPass findLockerPassCandidateBy(StudyCafePass pass) {
         List<StudyCafeLockerPass> allLockerPasses = cafeFileHandler.readLockerPasses();
         return allLockerPasses.stream()
