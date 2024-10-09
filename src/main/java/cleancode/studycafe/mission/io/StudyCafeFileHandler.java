@@ -1,9 +1,6 @@
 package cleancode.studycafe.mission.io;
 
-import cleancode.studycafe.mission.model.StudyCafeLockerPass;
-import cleancode.studycafe.mission.model.StudyCafePass;
-import cleancode.studycafe.mission.model.StudyCafePassType;
-import cleancode.studycafe.mission.model.StudyCafePasses;
+import cleancode.studycafe.mission.model.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +31,7 @@ public class StudyCafeFileHandler {
         }
     }
 
-    public List<StudyCafeLockerPass> readLockerPasses() {
+    public StudyCafeLockerPasses readLockerPasses() {
         try {
             List<String> lines = Files.readAllLines(Paths.get("src/main/resources/cleancode/studycafe/locker.csv"));
             List<StudyCafeLockerPass> lockerPasses = new ArrayList<>();
@@ -47,8 +44,7 @@ public class StudyCafeFileHandler {
                 StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(studyCafePassType, duration, price);
                 lockerPasses.add(lockerPass);
             }
-
-            return lockerPasses;
+            return StudyCafeLockerPasses.of(lockerPasses);
         } catch (IOException e) {
             throw new RuntimeException("파일을 읽는데 실패했습니다.", e);
         }

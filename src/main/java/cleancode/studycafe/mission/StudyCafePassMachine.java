@@ -4,10 +4,7 @@ import cleancode.studycafe.mission.exception.AppException;
 import cleancode.studycafe.mission.io.InputHandler;
 import cleancode.studycafe.mission.io.OutputHandler;
 import cleancode.studycafe.mission.io.StudyCafeFileHandler;
-import cleancode.studycafe.mission.model.StudyCafeLockerPass;
-import cleancode.studycafe.mission.model.StudyCafePass;
-import cleancode.studycafe.mission.model.StudyCafePassType;
-import cleancode.studycafe.mission.model.StudyCafePasses;
+import cleancode.studycafe.mission.model.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,28 +50,21 @@ public class StudyCafePassMachine {
     }
 
     private Optional<StudyCafeLockerPass> selectLockerPass(StudyCafePass selectedPass) {
-        if (selectedPass.getPassType() != StudyCafePassType.FIXED) {
+        if (selectedPass.cannotUseLocker()) {
             return Optional.empty();
         }
-        StudyCafeLockerPass lockerPassCandidate = findLockerPassCandidateBy(selectedPass);
-        if (lockerPassCandidate != null) {
-            outputHandler.askLockerPass(lockerPassCandidate);
-            boolean isLockerSelected = inputHandler.getLockerSelection();
+        Optional<StudyCafeLockerPass> lockerPassCandidate = findLockerPassCandidateBy(selectedPass);
+        if (lockerPassCandidate.isPresent()) {
+            StudyCafeLockerPass lockerPass = lockerPassCandidate.get();
+            boolean isLockerSelected = outputHandler.askLockerPass(lockerPass);
             if (isLockerSelected) {
-                return Optional.of(lockerPassCandidate);
+                return Optional.of(lockerPass);
             }
         }
-        return Optional.empty();
     }
 
-    private StudyCafeLockerPass findLockerPassCandidateBy(StudyCafePass pass) {
-        List<StudyCafeLockerPass> allLockerPasses = cafeFileHandler.readLockerPasses();
-        return allLockerPasses.stream()
-                .filter(lockerPass ->
-                        lockerPass.getPassType() == pass.getPassType()
-                        && lockerPass.getDuration() == pass.getDuration()
-                )
-                .findFirst()
-                .orElse(null);
+    private Optional<StudyCafeLockerPass> findLockerPassCandidateBy(StudyCafePass pass) {
+        StudyCafeLockerPasses allLockerPasses = cafeFileHandler.readLockerPasses();
+        return allLockerPasses.findLockerPassBy(pass);
     }
 }
