@@ -1,9 +1,12 @@
 package cleancode.studycafe.tobe.model.pass;
 
+import cleancode.studycafe.tobe.model.pass.locker.StudyCafeLockerPass;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StudyCafeSeatPassTest {
 
@@ -35,6 +38,34 @@ class StudyCafeSeatPassTest {
         boolean cannotUseLocker = seatPass.cannotUseLocker();
 
         assertThat(cannotUseLocker).isFalse();
+    }
+
+    @Test
+    @DisplayName("대여 기간과 이용권 타입에 따른 검증 테스트1")
+    void isSameDurationTypeTest() {
+        /*
+         * given : StudyCafeSeatPass와 StudyCafeLockerPass가 주어지고
+         * when : 둘이 같은 이용권 타입과 대여 기간을 갖는다면
+         * then : true를 기대
+         */
+        StudyCafeSeatPass seatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 4, 250000, 0.1);
+        StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(StudyCafePassType.FIXED, 4, 10000);
+
+        assertTrue(seatPass.isSameDurationType(lockerPass));
+    }
+
+    @Test
+    @DisplayName("대여 기간과 이용권 타입에 따른 검증 테스트2")
+    void isSameDurationTypeTest2() {
+        /*
+         * given : StudyCafeSeatPass와 StudyCafeLockerPass가 주어지고
+         * when : 둘이 같은 이용권 타입이지만 대여 기간이 다르다면
+         * then : false를 기대
+         */
+        StudyCafeSeatPass seatPass = StudyCafeSeatPass.of(StudyCafePassType.FIXED, 4, 250000, 0.1);
+        StudyCafeLockerPass lockerPass = StudyCafeLockerPass.of(StudyCafePassType.FIXED, 12, 30000);
+
+        assertFalse(seatPass.isSameDurationType(lockerPass));
     }
 
     @Test
